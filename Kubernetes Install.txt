@@ -1,0 +1,45 @@
+#install the k3s 
+curl -sfL https://get.k3s.io | sh - 
+
+#check the cluster info, 
+sudo kubectl cluster-info
+
+#check the node information
+sudo kubectl get nodes -o wide
+
+
+#check the pods
+sudo kubectl get pods
+
+#check the namespaces
+sudo kubectl get pods -A
+
+#check the running containers
+sudo crictl ps 
+
+#check the running all the nodes
+sudo kubectl get nodes
+
+
+#check the configuration files 
+sudo kubectl config view
+
+
+
+
+---------------------------------------
+#second node: make sure the master-node is accessable from the second node, ping is good, but advance is:
+telnet <master-node IP> 6443
+
+#find the secret token from the control node, this token is very important, make sure to keep this secret
+sudo cat /var/lib/rancher/k3s/server/node-token
+#output looks like this: K108cdb63ea9a77b2db481b3ed9fe90380ca00813c92095bec49217fada86019231::server:c0c18b914af011cc575fb72540f72e45
+
+#on the worker node, the k3s should be installed as well, but a bit different, looks as following:
+#curl -sfL https://get.k3s.io | K3S_URL=https://<ip of control-node:port> K3S_TOKEN=<token from the control-node> sh - 
+curl -sfL https://get.k3s.io | K3S_URL=https://172.27.113.39:6443 K3S_TOKEN=K108cdb63ea9a77b2db481b3ed9fe90380ca00813c92095bec49217fada86019231::server:c0c18b914af011cc575fb72540f72e45 sh - 
+
+#adding more node, same as running the above 
+
+-----------------------------------------------------------------------------------------------------
+#high availibility in cluster, if a control-node fails, the cluster wont work properly, therefore it should be multiple 
